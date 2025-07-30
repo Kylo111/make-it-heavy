@@ -44,6 +44,21 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 uv pip install -r requirements.txt
 ```
 
+**For GUI support (recommended):**
+```bash
+# GUI dependencies are included in requirements.txt
+# Additional system dependencies may be needed:
+
+# macOS (if using Homebrew)
+brew install python-tk
+
+# Ubuntu/Debian
+sudo apt-get install python3-tk
+
+# Windows (usually included with Python)
+# No additional installation needed
+```
+
 3. **Configure your provider:**
 
 **Option A: OpenRouter (Default)**
@@ -67,7 +82,130 @@ cp config_deepseek_reasoner.yaml config.yaml
 
 ## 🎯 Usage
 
-### Single Agent Mode
+### 🖥️ GUI Mode (Recommended)
+
+Launch the modern graphical interface for the best user experience:
+
+```bash
+python gui/main_app.py
+```
+
+📖 **Detailed GUI Documentation:**
+- **[GUI Installation Guide](GUI_INSTALLATION.md)** - Complete installation instructions for all platforms
+- **[GUI User Guide](GUI_USER_GUIDE.md)** - Comprehensive usage guide with screenshots and examples
+
+**🎨 Modern GUI Features:**
+- **🖼️ Native Interface**: Clean, modern Tkinter-based design optimized for desktop use
+- **🌓 Smart Theming**: Automatic dark/light theme detection with macOS system integration
+- **💬 Interactive Chat**: Real-time conversation interface with message history and typing indicators
+- **⚙️ Visual Configuration**: Intuitive settings panels for API keys, models, and preferences
+- **🔄 Multi-Provider Support**: Easy switching between OpenRouter, DeepSeek, and other providers
+- **🤖 Agent Orchestration**: Visual controls for single and multi-agent execution modes
+- **📊 Live Progress Tracking**: Real-time progress bars and status updates during multi-agent sessions
+- **💾 Session Management**: Save, load, and organize conversation sessions with persistent history
+- **🎛️ Advanced Controls**: Fine-tune agent parameters, timeout settings, and orchestration options
+- **📱 Responsive Design**: Adaptive layout that works on different screen sizes
+- **🔧 Multi-Model Configuration**: Visual interface for comparing and configuring different AI models
+- **💰 Cost Monitoring**: Real-time cost tracking and usage analytics
+- **🎯 Agent Templates**: Pre-configured agent setups for different use cases
+
+**🧩 GUI Components:**
+
+**Main Application (`gui/main_app.py`)**
+- Central hub with tabbed interface for different modes
+- Integrated menu system with keyboard shortcuts
+- Status bar with real-time system information
+- Window state persistence and restoration
+
+**Chat Interface (`gui/chat_interface.py`)**
+- Rich text conversation display with syntax highlighting
+- Message threading and conversation branching
+- Export conversations to various formats (Markdown, JSON, TXT)
+- Search and filter conversation history
+
+**Settings Panel (`gui/settings_panel.py`)**
+- Visual API key management with validation
+- Model selection with real-time cost estimates
+- Provider switching with automatic configuration migration
+- Advanced parameter tuning with tooltips and help text
+
+**Agent Manager (`gui/agent_manager.py`)**
+- Single agent mode with tool selection
+- Multi-agent orchestration with parallel execution monitoring
+- Custom agent configuration and role assignment
+- Real-time agent status and performance metrics
+
+**Multi-Model Configuration (`gui/multi_model_config_panel.py`)**
+- Visual model comparison with cost and performance metrics
+- Provider-specific model recommendations
+- Batch configuration for different use cases
+- Model performance benchmarking and testing
+
+**Session Manager (`gui/session_manager.py`)**
+- Conversation organization with tags and categories
+- Session templates for common workflows
+- Backup and restore functionality
+- Cross-session search and analytics
+
+**Theme Manager (`gui/theme_manager.py`)**
+- Automatic system theme detection (macOS, Windows, Linux)
+- Custom theme creation and sharing
+- Accessibility options (high contrast, large fonts)
+- Theme scheduling (day/night modes)
+
+**🚀 GUI Quick Start:**
+
+1. **Launch GUI**: `python gui/main_app.py`
+2. **Configure Provider**: Go to Settings → API Configuration
+3. **Select Model**: Choose your preferred provider and model
+4. **Start Chatting**: Use the chat interface for single agent conversations
+5. **Try Multi-Agent**: Switch to Agent Manager for Grok Heavy mode
+6. **Save Sessions**: Use Session Manager to organize your conversations
+7. **Monitor Costs**: Check the Cost Monitor tab for usage analytics
+8. **Configure Models**: Use Multi-Model Config for advanced model management
+
+**💡 GUI Tips:**
+- Use `Cmd+N` (macOS) or `Ctrl+N` (Windows/Linux) for new conversations
+- Press `Cmd+,` or `Ctrl+,` to quickly access settings
+- Use `Cmd+Shift+M` or `Ctrl+Shift+M` to toggle multi-agent mode
+- Right-click messages for context menu options (copy, export, etc.)
+- Drag and drop files into chat for file analysis
+- Use the status bar to monitor real-time API usage and costs
+- Access quick model switching via the toolbar dropdown
+
+**🎮 GUI Interface Modes:**
+
+**1. Chat Mode** - Interactive conversations with single agents
+- Real-time message streaming
+- Syntax highlighting for code responses
+- Message history with search functionality
+- Export conversations to multiple formats
+
+**2. Multi-Agent Mode** - Grok Heavy orchestration with visual feedback
+- Live progress tracking for all 4 agents
+- Individual agent status monitoring
+- Parallel execution visualization
+- Synthesis process display
+
+**3. Settings Mode** - Comprehensive configuration management
+- API key validation and testing
+- Model performance comparison
+- Provider switching with migration assistance
+- Advanced parameter tuning
+
+**4. Session Management** - Conversation organization and persistence
+- Session categorization and tagging
+- Cross-session search capabilities
+- Backup and restore functionality
+- Usage analytics and insights
+
+**5. Cost Monitor** - Real-time usage tracking and optimization
+- Token usage breakdown by provider
+- Cost projections and budgeting
+- Off-peak hour optimization suggestions
+- Historical usage analysis
+
+### Single Agent Mode (CLI)
 
 Run a single intelligent agent with full tool access:
 
@@ -87,7 +225,7 @@ User: Research the latest developments in AI and summarize them
 Agent: [Uses search tool, analyzes results, provides summary]
 ```
 
-### Grok heavy Mode (Multi-Agent Orchestration)
+### Grok Heavy Mode (CLI)
 
 Emulate Grok heavy's deep analysis with 4 parallel intelligent agents:
 
@@ -194,6 +332,42 @@ DeepSeek offers significant discounts during off-peak hours (11 PM - 7 AM Beijin
 4. **Start Saving**: Enjoy up to 90% cost savings compared to premium models
 
 ## 🏗️ Architecture
+
+### GUI Architecture
+
+```mermaid
+graph TD
+    A[Main App] --> B[Chat Interface]
+    A --> C[Settings Panel]
+    A --> D[Agent Manager]
+    A --> E[Session Manager]
+    A --> F[Multi-Model Config]
+    A --> G[Cost Monitor]
+    
+    B --> H[Message Display]
+    B --> I[Input Handler]
+    B --> J[Response Streaming]
+    
+    C --> K[API Configuration]
+    C --> L[Theme Management]
+    C --> M[Provider Settings]
+    
+    D --> N[Single Agent Mode]
+    D --> O[Multi-Agent Orchestration]
+    D --> P[Progress Tracking]
+    
+    E --> Q[Session Storage]
+    E --> R[Conversation History]
+    E --> S[Export/Import]
+    
+    F --> T[Model Comparison]
+    F --> U[Cost Analysis]
+    F --> V[Performance Metrics]
+    
+    G --> W[Usage Tracking]
+    G --> X[Cost Projections]
+    G --> Y[Optimization Suggestions]
+```
 
 ### Orchestration Flow
 
@@ -426,6 +600,42 @@ orchestrator:
 
 ## 🎮 Examples
 
+### GUI Workflow Examples
+
+**Research Query via GUI:**
+```
+1. Launch GUI: python gui/main_app.py
+2. Navigate to Chat tab
+3. Enter: "Analyze the impact of AI on software development in 2024"
+4. Watch real-time response streaming with syntax highlighting
+5. Switch to Multi-Agent tab for Grok Heavy analysis
+6. Monitor progress bars as 4 agents work in parallel
+7. View synthesized comprehensive analysis
+8. Save session for future reference
+```
+
+**Model Comparison via GUI:**
+```
+1. Open Multi-Model Config tab
+2. Select models to compare (e.g., DeepSeek-V3 vs GPT-4.1 Mini)
+3. View cost analysis and performance metrics
+4. Test both models with sample queries
+5. Choose optimal model based on results
+6. Apply configuration with one click
+```
+
+**Cost Optimization via GUI:**
+```
+1. Open Cost Monitor tab
+2. Review usage patterns and spending
+3. Identify high-cost operations
+4. Get optimization suggestions (e.g., use off-peak hours)
+5. Set budget alerts and limits
+6. Track savings over time
+```
+
+### CLI Examples
+
 ### Research Query
 ```bash
 User: "Analyze the impact of AI on software development in 2024"
@@ -585,6 +795,45 @@ Solution:
 - Reduce parallel_agents for complex tasks
 ```
 
+### GUI-Specific Issues
+
+**GUI Won't Start:**
+```
+Error: No module named 'tkinter'
+Solution:
+- macOS: brew install python-tk
+- Ubuntu/Debian: sudo apt-get install python3-tk
+- Windows: Reinstall Python with tkinter support
+```
+
+**Theme Issues:**
+```
+Error: Theme not loading correctly
+Solution:
+- Check system theme settings
+- Reset theme to default in Settings → Appearance
+- Clear theme cache: rm -rf ~/.make_it_heavy/themes/cache
+```
+
+**Session Management Issues:**
+```
+Error: Cannot save/load sessions
+Solution:
+- Check write permissions in project directory
+- Verify .kiro/sessions/ directory exists
+- Clear corrupted sessions: rm -rf .kiro/sessions/*.json
+```
+
+**GUI Performance Issues:**
+```
+Issue: GUI feels slow or unresponsive
+Solution:
+- Reduce message history limit in settings
+- Disable real-time syntax highlighting for large responses
+- Close unused tabs to free memory
+- Check system resources (RAM, CPU usage)
+```
+
 ### Debug Mode
 
 Enable detailed debugging for troubleshooting:
@@ -592,6 +841,16 @@ Enable detailed debugging for troubleshooting:
 ```python
 # In main.py or make_it_heavy.py
 agent = UniversalAgent(config_path, silent=False)  # Enable debug output
+```
+
+**GUI Debug Mode:**
+```bash
+# Launch GUI with debug logging
+python gui/main_app.py --debug
+
+# Or set environment variable
+export MAKE_IT_HEAVY_DEBUG=1
+python gui/main_app.py
 ```
 
 **Debug Configuration:**
@@ -810,26 +1069,139 @@ uv run make_it_heavy.py --config config_openrouter_premium.yaml
 
 ```
 make-it-heavy/
-├── main.py                      # Single agent CLI
-├── make_it_heavy.py             # Multi-agent orchestrator CLI  
-├── agent.py                     # Universal agent implementation
-├── orchestrator.py              # Multi-agent orchestration logic
-├── config_manager.py            # Configuration management system
-├── provider_factory.py          # Provider client factory
-├── config.yaml                  # Default configuration file
-├── config_deepseek.yaml         # DeepSeek configuration template
-├── config_deepseek_reasoner.yaml # DeepSeek Reasoner configuration template
-├── requirements.txt             # Python dependencies
-├── README.md                    # This documentation
-└── tools/                       # Tool system
-    ├── __init__.py              # Auto-discovery system
-    ├── base_tool.py             # Tool base class
-    ├── search_tool.py           # Web search
-    ├── calculator_tool.py       # Math calculations  
-    ├── read_file_tool.py        # File reading
-    ├── write_file_tool.py       # File writing
-    └── task_done_tool.py        # Task completion
+├── 🚀 Core Framework
+│   ├── main.py                      # Single agent CLI entry point
+│   ├── make_it_heavy.py             # Multi-agent orchestrator CLI
+│   ├── agent.py                     # Universal agent implementation
+│   ├── orchestrator.py              # Multi-agent orchestration logic
+│   ├── config_manager.py            # Configuration management system
+│   └── provider_factory.py          # Provider client factory
+│
+├── ⚙️ Configuration Files
+│   ├── config.yaml                  # Default configuration file
+│   ├── config_deepseek.yaml         # DeepSeek configuration template
+│   ├── config_deepseek_reasoner.yaml # DeepSeek Reasoner configuration template
+│   └── requirements.txt             # Python dependencies
+│
+├── 🖥️ Graphical User Interface
+│   ├── main_app.py                  # Main GUI application with tabbed interface
+│   │                                # - Tkinter-based modern interface
+│   │                                # - Cross-platform compatibility (macOS, Windows, Linux)
+│   │                                # - Tabbed interface for different modes
+│   │                                # - Menu system with keyboard shortcuts
+│   │                                # - Status bar with real-time information
+│   │
+│   ├── chat_interface.py            # Interactive chat with rich text and history
+│   │                                # - Real-time message streaming
+│   │                                # - Syntax highlighting for code responses
+│   │                                # - Message history with search functionality
+│   │                                # - Export conversations (Markdown, JSON, TXT)
+│   │                                # - Right-click context menus
+│   │
+│   ├── settings_panel.py            # Visual configuration management
+│   │                                # - API key validation and testing
+│   │                                # - Provider switching interface
+│   │                                # - Model selection with cost estimates
+│   │                                # - Advanced parameter tuning
+│   │                                # - Configuration backup/restore
+│   │
+│   ├── agent_manager.py             # Agent orchestration controls and monitoring
+│   │                                # - Single agent mode controls
+│   │                                # - Multi-agent orchestration interface
+│   │                                # - Real-time progress tracking
+│   │                                # - Agent status monitoring
+│   │                                # - Custom agent configuration
+│   │
+│   ├── session_manager.py           # Conversation persistence and organization
+│   │                                # - Session categorization and tagging
+│   │                                # - Cross-session search capabilities
+│   │                                # - Backup and restore functionality
+│   │                                # - Usage analytics and insights
+│   │                                # - Session templates
+│   │
+│   ├── theme_manager.py             # Theme and appearance management
+│   │                                # - Automatic system theme detection
+│   │                                # - Custom theme creation and sharing
+│   │                                # - Accessibility options (high contrast, large fonts)
+│   │                                # - Theme scheduling (day/night modes)
+│   │                                # - Platform-specific optimizations
+│   │
+│   ├── multi_model_config_panel.py  # Advanced model configuration interface
+│   │                                # - Visual model comparison with metrics
+│   │                                # - Provider-specific model recommendations
+│   │                                # - Batch configuration for different use cases
+│   │                                # - Model performance benchmarking
+│   │                                # - Cost optimization suggestions
+│   │
+│   └── __init__.py                  # GUI package initialization
+│
+├── 🧠 Advanced Model Configuration
+│   ├── model_configuration_manager.py # Centralized model management
+│   ├── provider_model_service.py      # Provider-specific model handling
+│   ├── cost_calculation_service.py    # Real-time usage cost tracking
+│   ├── model_validation_service.py    # Configuration validation and testing
+│   ├── data_models.py                 # Type definitions and data structures
+│   └── __init__.py                    # Model config package initialization
+│
+├── 🛠️ Tool System
+│   ├── __init__.py                  # Auto-discovery system
+│   ├── base_tool.py                 # Tool base class and interface
+│   ├── search_tool.py               # Web search with DuckDuckGo
+│   ├── calculator_tool.py           # Safe mathematical calculations
+│   ├── read_file_tool.py            # File reading and content analysis
+│   ├── write_file_tool.py           # File creation and modification
+│   └── task_done_tool.py            # Task completion signaling
+│
+├── 🧪 Testing & Demos
+│   ├── demo_advanced_features.py    # Advanced features demonstration
+│   ├── demo_multi_model_gui.py      # GUI multi-model demonstration
+│   ├── demo_multi_model_orchestrator.py # Orchestrator demonstration
+│   ├── cost_monitor.py              # Cost monitoring and analysis
+│   ├── test_*.py                    # Comprehensive test suite
+│   └── verify_*.py                  # Feature verification scripts
+│
+├── 📚 Documentation
+│   ├── README.md                    # Main documentation (this file)
+│   ├── GUI_USER_GUIDE.md            # Comprehensive GUI usage guide
+│   ├── GUI_INSTALLATION.md          # GUI installation instructions for all platforms
+│   ├── ADVANCED_FEATURES_GUIDE.md   # Advanced usage guide
+│   ├── MIGRATION_GUIDE.md           # Provider migration instructions
+│   ├── MULTI_MODEL_IMPLEMENTATION_SUMMARY.md # Implementation overview
+│   ├── GUI_FIXES_SUMMARY.md         # GUI improvements documentation
+│   └── DEEPSEEK_FIX.md             # DeepSeek integration fixes
+│
+└── 🎯 Development & Configuration
+    ├── .kiro/                       # Kiro IDE configuration
+    │   ├── steering/                # Development guidelines
+    │   └── specs/                   # Feature specifications
+    └── .superdesign/                # Design assets and iterations
 ```
+
+**🏗️ Architecture Overview:**
+
+**Frontend Layer (GUI)**
+- Modern Tkinter-based interface with native OS integration
+- Real-time chat interface with conversation management
+- Visual configuration panels with validation
+- Multi-agent orchestration controls with progress monitoring
+
+**Core Logic Layer**
+- Universal agent system with provider abstraction
+- Multi-agent orchestrator with parallel execution
+- Configuration management with hot-swapping
+- Provider factory with automatic client creation
+
+**Integration Layer**
+- Tool system with auto-discovery and hot-loading
+- Model configuration with cost calculation
+- Session management with persistence
+- Theme management with system integration
+
+**Data Layer**
+- YAML-based configuration with validation
+- JSON session storage with compression
+- Cost tracking with historical analysis
+- Model metadata with performance metrics
 
 ## 🤝 Contributing
 

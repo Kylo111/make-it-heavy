@@ -4,3 +4,10 @@ beautifulsoup4
 pyyaml
 ddgs
 pytest
+
+# GUI dependencies
+tkinter  # Usually included with Python, but listed for completeness
+pillow  # For image handling in GUI
+matplotlib  # For cost monitoring charts and graphs
+pandas  # For data analysis in cost monitoring
+numpy  # For numerical operations in analytics
