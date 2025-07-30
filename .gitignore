@@ -238,4 +238,12 @@ $RECYCLE.BIN/
 # For example:
 # data/
 # output/
-# results/ 
+# results/
+
+# Kiro IDE sessions (user-specific)
+.kiro/sessions/
+!.kiro/sessions/.gitkeep
+
+# GUI user data
+gui_sessions/
+user_preferences.json 
