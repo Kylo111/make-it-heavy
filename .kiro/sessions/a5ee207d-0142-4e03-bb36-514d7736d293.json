@@ -1,0 +1,27 @@
+{
+  "session_id": "a5ee207d-0142-4e03-bb36-514d7736d293",
+  "title": "Ilu mieszkancow ma Warszawa, a ilu jest rodowitych...",
+  "created_at": "2025-07-29T00:18:14.650309",
+  "last_updated": "2025-07-29T00:20:22.125937",
+  "messages": [
+    {
+      "sender": "system",
+      "content": "Switched to Heavy Mode (4 agents)",
+      "timestamp": "2025-07-29T00:18:16.850095",
+      "message_type": "text"
+    },
+    {
+      "sender": "user",
+      "content": "Ilu mieszkancow ma Warszawa, a ilu jest rodowitych warszawiakow?",
+      "timestamp": "2025-07-29T00:18:50.365094",
+      "message_type": "text"
+    },
+    {
+      "sender": "agent",
+      "content": "Here is the comprehensive final answer synthesizing all the agent responses:\n\n---\n\n### **Population and Demographics of Warsaw**\n\n1. **Population Statistics**:\n   - The city proper of Warsaw has an estimated population of **1.86 million residents**, as reported by official sources like Wikipedia and Statista (2023 data).\n   - The greater metropolitan area population is approximately **3.27 million**.\n   - Macrotrends provides a slightly different estimate for the metro area in 2023 at **1.798 million**, with modest annual growth.\n\n2. **Native Residents**:\n   - The term \"native Warsaw resident\" typically refers to individuals born in Warsaw or with long-standing ties to the city. However, specific data on the percentage of native residents is not readily available.\n   - The 2021 census indicates that **98.78% of Warsaw residents identify as Polish**, but this reflects nationality rather than place of birth or native status.\n   - For more detailed breakdowns (e.g., place of birth or duration of residence), consulting local government or statistical reports (e.g., GUS - Statistics Poland) would be necessary.\n\n3. **Migration Trends**:\n   - Warsaw has experienced urban migration trends, with many residents living outside the city center and commuting.\n   - Poland's EU membership has influenced migration patterns, contributing to population changes. Academic reports on migration in Central Europe may provide further insights.\n\n4. **Cultural and Social Impact**:\n   - There is limited specific research on how demographic studies differentiate between native and non-native Warsaw residents in terms of cultural or social impact.\n   - General terminology, such as \"Varsovian\" for native residents, is acknowledged, but detailed studies are not widely cited.\n\nFor the most accurate and up-to-date information, official Polish statistical sources like [GUS (Statistics Poland)](https://stat.gov.pl/) are recommended. Further exploration of local reports or academic studies may yield additional insights into native residency and migration dynamics.",
+      "timestamp": "2025-07-29T00:20:22.125910",
+      "message_type": "text"
+    }
+  ],
+  "config": null
+}
