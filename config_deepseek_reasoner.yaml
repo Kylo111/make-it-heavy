@@ -1,19 +1,21 @@
-# DeepSeek Configuration for Make It Heavy
+# DeepSeek Reasoner Configuration for Make It Heavy
 # Provider selection
 provider:
   type: "deepseek"
 
 # DeepSeek API settings
 deepseek:
-  api_key: "sk-16dc8f03dd4a4ae4835330cd78eb79bf"  # Replace with your actual DeepSeek API key
+  api_key: "YOUR_DEEPSEEK_API_KEY"  # Replace with your actual DeepSeek API key
   base_url: "https://api.deepseek.com"
-  model: "deepseek-chat"  # DeepSeek-V3 for general purpose tasks
+  model: "deepseek-reasoner"  # DeepSeek-R1 for complex reasoning tasks
 
 # System prompt for the agent
 system_prompt: |
-  You are a helpful research assistant. When users ask questions that require 
+  You are a highly capable reasoning assistant with advanced analytical capabilities. When users ask questions that require 
   current information or web search, use the search tool and all other tools available to find relevant 
-  information and provide comprehensive answers based on the results.
+  information and provide comprehensive, well-reasoned answers based on the results.
+  
+  Take time to think through complex problems step by step, considering multiple perspectives and potential solutions.
   
   IMPORTANT: When you have fully satisfied the user's request and provided a complete answer, 
   you MUST call the mark_task_complete tool with a summary of what was accomplished and 
@@ -21,22 +23,23 @@ system_prompt: |
 
 # Agent settings
 agent:
-  max_iterations: 10
+  max_iterations: 15  # More iterations for complex reasoning
 
 # Orchestrator settings
 orchestrator:
   parallel_agents: 4  # Number of agents to run in parallel
-  task_timeout: 300   # Timeout in seconds per agent
+  task_timeout: 450   # Longer timeout for reasoning tasks (7.5 minutes)
   aggregation_strategy: "consensus"  # How to combine results
   
   # Question generation prompt for orchestrator
   question_generation_prompt: |
     You are an orchestrator that needs to create {num_agents} different questions to thoroughly analyze this topic from multiple angles.
+    Focus on creating questions that require deep reasoning and analysis.
     
     Original user query: {user_input}
     
     Generate exactly {num_agents} different, specific questions that will help gather comprehensive information about this topic.
-    Each question should approach the topic from a different angle (research, analysis, verification, alternatives, etc.).
+    Each question should approach the topic from a different analytical angle (research, logical analysis, verification, alternative perspectives, etc.).
     
     Return your response as a JSON array of strings, like this:
     ["question 1", "question 2", "question 3", "question 4"]
@@ -45,18 +48,18 @@ orchestrator:
 
   # Synthesis prompt for combining all agent responses
   synthesis_prompt: |
-    You have {num_responses} different AI agents that analyzed the same query from different perspectives. 
-    Your job is to synthesize their responses into ONE comprehensive final answer.
+    You have {num_responses} different AI reasoning agents that analyzed the same query from different perspectives. 
+    Your job is to synthesize their responses into ONE comprehensive final answer that demonstrates deep reasoning.
     
     Here are all the agent responses:
     
     {agent_responses}
     
-    IMPORTANT: Just synthesize these into ONE final comprehensive answer that combines the best information from all agents. 
+    IMPORTANT: Just synthesize these into ONE final comprehensive answer that combines the best reasoning from all agents. 
     Do NOT call mark_task_complete or any other tools. Do NOT mention that you are synthesizing multiple responses. 
     Simply provide the final synthesized answer directly as your response.
 
 # Search tool settings
 search:
-  max_results: 5
-  user_agent: "Mozilla/5.0 (compatible; DeepSeek Agent)"
+  max_results: 7  # More results for thorough research
+  user_agent: "Mozilla/5.0 (compatible; DeepSeek Reasoner Agent)"

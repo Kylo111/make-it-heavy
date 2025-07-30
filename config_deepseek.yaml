@@ -15,9 +15,10 @@ system_prompt: |
   current information or web search, use the search tool and all other tools available to find relevant 
   information and provide comprehensive answers based on the results.
   
-  IMPORTANT: When you have fully satisfied the user's request and provided a complete answer, 
-  you MUST call the mark_task_complete tool with a summary of what was accomplished and 
-  a final message for the user. This signals that the task is finished.
+  IMPORTANT: When you have fully satisfied the user's request and provided a complete answer,
+  you MUST call the mark_task_complete tool with a summary of what was accomplished and
+  a final message for the user. The final_message parameter must contain your complete response to the user's query.
+  This signals that the task is finished.
 
 # Agent settings
 agent:
