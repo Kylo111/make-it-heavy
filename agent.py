@@ -2,26 +2,46 @@ import json
 import yaml
 from openai import OpenAI
 from tools import discover_tools
+from config_manager import ConfigurationManager, ConfigurationError
+from provider_factory import ProviderClientFactory, ProviderError, DeepSeekAPIError, OpenRouterAPIError
 
-class OpenRouterAgent:
+class UniversalAgent:
+    """Universal agent that works with any OpenAI-compatible provider (OpenRouter, DeepSeek, etc.)"""
+    
     def __init__(self, config_path="config.yaml", silent=False):
-        # Load configuration
-        with open(config_path, 'r') as f:
-            self.config = yaml.safe_load(f)
-        
         # Silent mode for orchestrator (suppresses debug output)
         self.silent = silent
         
-        # Initialize OpenAI client with OpenRouter
-        self.client = OpenAI(
-            base_url=self.config['openrouter']['base_url'],
-            api_key=self.config['openrouter']['api_key']
-        )
+        try:
+            # Load configuration using ConfigurationManager
+            self.config_manager = ConfigurationManager()
+            self.config = self.config_manager.load_config(config_path)
+            
+            # Get provider configuration
+            self.provider_config = self.config_manager.get_provider_config()
+            self.provider_type = self.provider_config.provider_type
+            
+            # Create provider-specific client
+            self.client = ProviderClientFactory.create_client(self.provider_config)
+            
+            # Get provider and model information
+            self.provider_info = ProviderClientFactory.get_provider_info(self.provider_type)
+            self.model_info = ProviderClientFactory.get_model_info(self.provider_type, self.provider_config.model)
+            
+            if not self.silent:
+                print(f"🤖 Initialized {self.provider_info.get('name', self.provider_type)} Agent")
+                print(f"📡 Provider: {self.provider_type}")
+                print(f"🧠 Model: {self.provider_config.model}")
+                if self.model_info.get('name'):
+                    print(f"📋 Model Name: {self.model_info['name']}")
+            
+        except (ConfigurationError, ProviderError) as e:
+            raise Exception(f"Agent initialization failed: {str(e)}")
         
         # Discover tools dynamically
         self.discovered_tools = discover_tools(self.config, silent=self.silent)
         
-        # Build OpenRouter tools array
+        # Build tools array (compatible with OpenAI format)
         self.tools = [tool.to_openrouter_schema() for tool in self.discovered_tools.values()]
         
         # Build tool mapping
@@ -29,16 +49,54 @@ class OpenRouterAgent:
     
     
     def call_llm(self, messages):
-        """Make OpenRouter API call with tools"""
+        """Make API call with tools (works with any OpenAI-compatible provider)"""
         try:
-            response = self.client.chat.completions.create(
-                model=self.config['openrouter']['model'],
-                messages=messages,
-                tools=self.tools
-            )
+            # Prepare API call parameters
+            api_params = {
+                "model": self.provider_config.model,
+                "messages": messages
+            }
+            
+            # For DeepSeek, ensure tools array is never empty by adding a dummy tool if needed
+            if self.provider_type == "deepseek":
+                if self.tools:
+                    api_params["tools"] = self.tools
+                else:
+                    # Add a dummy tool for DeepSeek when no real tools are available
+                    dummy_tool = {
+                        "type": "function",
+                        "function": {
+                            "name": "dummy_tool",
+                            "description": "A dummy tool that does nothing",
+                            "parameters": {
+                                "type": "object",
+                                "properties": {},
+                                "required": []
+                            }
+                        }
+                    }
+                    api_params["tools"] = [dummy_tool]
+            elif self.tools:
+                api_params["tools"] = self.tools
+            
+            response = self.client.chat.completions.create(**api_params)
             return response
         except Exception as e:
-            raise Exception(f"LLM call failed: {str(e)}")
+            # Provide provider-specific error messages
+            if self.provider_type == "deepseek":
+                error_msg = f"DeepSeek API call failed: {str(e)}"
+                if "api_key" in str(e).lower():
+                    error_msg += "\n💡 Check your DeepSeek API key in the configuration file"
+                elif "rate" in str(e).lower():
+                    error_msg += "\n💡 DeepSeek rate limit reached. Try again later or during off-peak hours (16:30-00:30 UTC)"
+                raise DeepSeekAPIError(error_msg)
+            elif self.provider_type == "openrouter":
+                error_msg = f"OpenRouter API call failed: {str(e)}"
+                if "api_key" in str(e).lower():
+                    error_msg += "\n💡 Check your OpenRouter API key in the configuration file"
+                raise OpenRouterAPIError(error_msg)
+            else:
+                raise Exception(f"LLM call failed: {str(e)}")
     
     def handle_tool_call(self, tool_call):
         """Handle a tool call and return the result message"""
@@ -69,13 +127,26 @@ class OpenRouterAgent:
                 "content": json.dumps({"error": f"Tool execution failed: {str(e)}"})
             }
     
+    def get_provider_info(self) -> dict:
+        """Get information about the current provider and model"""
+        return {
+            "provider_type": self.provider_type,
+            "provider_name": self.provider_info.get('name', self.provider_type),
+            "model": self.provider_config.model,
+            "model_name": self.model_info.get('name', self.provider_config.model),
+            "base_url": self.provider_config.base_url,
+            "supports_function_calling": self.model_info.get('supports_function_calling', True),
+            "context_window": self.model_info.get('context_window', 'Unknown')
+        }
+    
     def run(self, user_input: str):
         """Run the agent with user input and return FULL conversation content"""
         # Initialize messages with system prompt and user input
+        system_prompt = self.config_manager.get_system_prompt()
         messages = [
             {
                 "role": "system",
-                "content": self.config['system_prompt']
+                "content": system_prompt
             },
             {
                 "role": "user",
@@ -86,9 +157,13 @@ class OpenRouterAgent:
         # Track all assistant responses for full content capture
         full_response_content = []
         
-        # Implement agentic loop from OpenRouter docs
-        max_iterations = self.config.get('agent', {}).get('max_iterations', 10)
+        # Get agent configuration
+        agent_config = self.config_manager.get_agent_config()
+        max_iterations = agent_config.get('max_iterations', 10)
         iteration = 0
+        
+        # Remove dummy tool addition - handle empty tools at API call level instead
+        # The dummy tool was interfering with normal agent operation
         
         while iteration < max_iterations:
             iteration += 1
@@ -100,15 +175,33 @@ class OpenRouterAgent:
             
             # Add the response to messages
             assistant_message = response.choices[0].message
-            messages.append({
+            message_dict = {
                 "role": "assistant",
-                "content": assistant_message.content,
-                "tool_calls": assistant_message.tool_calls
-            })
+                "content": assistant_message.content
+            }
+            
+            # Only add tool_calls if they exist
+            if hasattr(assistant_message, 'tool_calls') and assistant_message.tool_calls:
+                message_dict["tool_calls"] = assistant_message.tool_calls
+                
+            messages.append(message_dict)
             
             # Capture assistant content for full response
+            # If content is empty but there are tool calls, use the tool call arguments as content
             if assistant_message.content:
                 full_response_content.append(assistant_message.content)
+            elif hasattr(assistant_message, 'tool_calls') and assistant_message.tool_calls:
+                # Extract content from tool calls, particularly the mark_task_complete tool
+                for tool_call in assistant_message.tool_calls:
+                    if tool_call.function.name == "mark_task_complete":
+                        try:
+                            args = json.loads(tool_call.function.arguments)
+                            if 'completion_message' in args:
+                                full_response_content.append(args['completion_message'])
+                            elif 'task_summary' in args:
+                                full_response_content.append(args['task_summary'])
+                        except:
+                            pass
             
             # Check if there are tool calls
             if assistant_message.tool_calls:
@@ -127,7 +220,16 @@ class OpenRouterAgent:
                         task_completed = True
                         if not self.silent:
                             print("✅ Task completion tool called - exiting loop")
-                        # Return FULL conversation content, not just completion message
+                        # Extract final message from tool arguments
+                        try:
+                            args = json.loads(tool_call.function.arguments)
+                            if 'completion_message' in args:
+                                full_response_content.append(args['completion_message'])
+                            elif 'task_summary' in args:
+                                full_response_content.append(args['task_summary'])
+                        except:
+                            pass
+                        # Return FULL conversation content
                         return "\n\n".join(full_response_content)
                 
                 # If task was completed, we already returned above
@@ -141,3 +243,31 @@ class OpenRouterAgent:
         
         # If max iterations reached, return whatever content we gathered
         return "\n\n".join(full_response_content) if full_response_content else "Maximum iterations reached. The agent may be stuck in a loop."
+
+# Backward compatibility: OpenRouterAgent is now an alias for UniversalAgent
+class OpenRouterAgent(UniversalAgent):
+    """
+    Backward compatibility class. 
+    OpenRouterAgent is now an alias for UniversalAgent.
+    """
+    
+    def __init__(self, config_path="config.yaml", silent=False):
+        # Check if this is a legacy config file (has 'openrouter' key but no 'provider' key)
+        try:
+            with open(config_path, 'r') as f:
+                config = yaml.safe_load(f)
+            
+            # If it's a legacy config, we need to handle it specially
+            if 'openrouter' in config and 'provider' not in config:
+                if not silent:
+                    print("⚠️  Using legacy OpenRouter configuration format")
+                    print("💡 Consider updating to the new universal configuration format")
+        except Exception:
+            pass  # If we can't read the config, let UniversalAgent handle the error
+        
+        # Initialize as UniversalAgent
+        super().__init__(config_path, silent)
+
+
+# For convenience, create an alias
+Agent = UniversalAgent

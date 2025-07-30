@@ -1,27 +1,41 @@
 import time
 import threading
 import sys
+import argparse
 from orchestrator import TaskOrchestrator
+from agent import UniversalAgent
 
 class OrchestratorCLI:
-    def __init__(self):
-        self.orchestrator = TaskOrchestrator()
+    def __init__(self, config_path="config.yaml"):
+        self.config_path = config_path
+        self.orchestrator = TaskOrchestrator(config_path=config_path)
         self.start_time = None
         self.running = False
         
-        # Extract model name for display
-        model_full = self.orchestrator.config['openrouter']['model']
-        # Extract model name (e.g., "google/gemini-2.5-flash-preview-05-20" -> "GEMINI-2.5-FLASH")
-        if '/' in model_full:
-            model_name = model_full.split('/')[-1]
-        else:
-            model_name = model_full
-        
-        # Clean up model name for display
-        model_parts = model_name.split('-')
-        # Take first 3 parts for cleaner display (e.g., gemini-2.5-flash)
-        clean_name = '-'.join(model_parts[:3]) if len(model_parts) >= 3 else model_name
-        self.model_display = clean_name.upper() + " HEAVY"
+        # Get provider information for display
+        try:
+            temp_agent = UniversalAgent(config_path=config_path, silent=True)
+            provider_info = temp_agent.get_provider_info()
+            
+            # Create display name based on provider and model
+            provider_name = provider_info['provider_name'].upper()
+            model_name = provider_info['model']
+            
+            # Clean up model name for display
+            if '/' in model_name:
+                model_name = model_name.split('/')[-1]
+            
+            model_parts = model_name.split('-')
+            # Take first 3 parts for cleaner display (e.g., gemini-2.5-flash)
+            clean_name = '-'.join(model_parts[:3]) if len(model_parts) >= 3 else model_name
+            
+            self.model_display = f"{provider_name} {clean_name.upper()} HEAVY"
+            self.provider_info = provider_info
+            
+        except Exception as e:
+            # Fallback display name
+            self.model_display = "UNIVERSAL AGENT HEAVY"
+            self.provider_info = {"provider_type": "unknown", "error": str(e)}
         
     def clear_screen(self):
         """Properly clear the entire screen"""
@@ -145,16 +159,32 @@ class OrchestratorCLI:
         print("-" * 50)
         
         try:
-            orchestrator_config = self.orchestrator.config['openrouter']
-            print(f"Using model: {orchestrator_config['model']}")
+            # Display provider information
+            if 'error' not in self.provider_info:
+                print(f"Provider: {self.provider_info['provider_name']}")
+                print(f"Model: {self.provider_info['model_name']}")
+                print(f"Base URL: {self.provider_info['base_url']}")
+                print(f"Function Calling: {'✓' if self.provider_info['supports_function_calling'] else '✗'}")
+                
+                # Provider-specific setup notes
+                if self.provider_info['provider_type'] == 'deepseek':
+                    print("Note: Make sure to set your DeepSeek API key in the configuration file")
+                    print("💡 Tip: Use DeepSeek during off-peak hours (16:30-00:30 UTC) for lower costs")
+                elif self.provider_info['provider_type'] == 'openrouter':
+                    print("Note: Make sure to set your OpenRouter API key in the configuration file")
+                else:
+                    print(f"Note: Make sure to set your {self.provider_info['provider_type']} API key in the configuration file")
+            else:
+                print(f"Warning: Could not get provider info: {self.provider_info['error']}")
+            
             print("Orchestrator initialized successfully!")
-            print("Note: Make sure to set your OpenRouter API key in config.yaml")
             print("-" * 50)
         except Exception as e:
             print(f"Error initializing orchestrator: {e}")
             print("Make sure you have:")
-            print("1. Set your OpenRouter API key in config.yaml")
+            print("1. Set your API key in the configuration file")
             print("2. Installed all dependencies with: pip install -r requirements.txt")
+            print("3. Used a valid configuration file (try --config config_deepseek.yaml for DeepSeek)")
             return
         
         while True:
@@ -187,7 +217,13 @@ class OrchestratorCLI:
 
 def main():
     """Main entry point for the orchestrator CLI"""
-    cli = OrchestratorCLI()
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Multi-Agent Orchestrator with Multi-Provider Support')
+    parser.add_argument('--config', '-c', default='config.yaml', 
+                       help='Configuration file path (default: config.yaml)')
+    args = parser.parse_args()
+    
+    cli = OrchestratorCLI(config_path=args.config)
     cli.interactive_mode()
 
 if __name__ == "__main__":
