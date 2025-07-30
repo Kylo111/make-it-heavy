@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>AI Agent Configuration</title>
+  <link href='macos_dark_theme.css' rel='stylesheet'>
+  <script src='https://cdn.tailwindcss.com'></script>
+  <script src='https://cdn.jsdelivr.net/npm/flowbite@2.0.0/dist/flowbite.min.js'></script>
+</head>
+<body class='bg-background text-foreground font-sans p-6'>
+  <div class='max-w-2xl mx-auto space-y-6'>
+    <!-- Header -->
+    <div class='flex items-center justify-between mb-8'>
+      <h1 class='text-2xl font-bold'>AI Agent Settings</h1>
+      <div class='flex gap-2'>
+        <button class='px-4 py-2 bg-primary rounded-lg shadow hover:bg-primary/90 transition'>Save</button>
+        <button class='px-4 py-2 border border-border rounded-lg hover:bg-muted transition'>Cancel</button>
+      </div>
+    </div>
+
+    <!-- API Keys Section -->
+    <div class='bg-muted p-6 rounded-xl shadow'>
+      <h2 class='text-lg font-semibold mb-4'>API Configuration</h2>
+      
+      <div class='space-y-4'>
+        <div>
+          <label class='block mb-2'>DeepSeek API Key</label>
+          <input type='password' class='w-full bg-input rounded-lg p-3 border border-border focus:ring-2 ring-primary'>
+        </div>
+        
+        <div>
+          <label class='block mb-2'>OpenRouter API Key</label>
+          <input type='password' class='w-full bg-input rounded-lg p-3 border border-border focus:ring-2 ring-primary'>
+        </div>
+      </div>
+    </div>
+
+    <!-- Provider Selection -->
+    <div class='bg-muted p-6 rounded-xl shadow'>
+      <h2 class='text-lg font-semibold mb-4'>Service Provider</h2>
+      <div class='flex gap-4'>
+        <button class='flex-1 py-3 rounded-lg border border-border hover:bg-primary/20 transition'>DeepSeek</button>
+        <button class='flex-1 py-3 rounded-lg border border-border hover:bg-primary/20 transition'>OpenRouter</button>
+      </div>
+    </div>
+
+    <!-- Agent Selection -->
+    <div class='bg-muted p-6 rounded-xl shadow'>
+      <h2 class='text-lg font-semibold mb-4'>Agent Mode</h2>
+      <div class='grid grid-cols-2 gap-4'>
+        <div class='p-4 border border-border rounded-lg cursor-pointer hover:bg-primary/10'>
+          <h3 class='font-semibold mb-2'>Main Agent</h3>
+          <p class='text-sm text-foreground/80'>Standard processing mode</p>
+        </div>
+        <div class='p-4 border border-border rounded-lg cursor-pointer hover:bg-primary/10'>
+          <h3 class='font-semibold mb-2'>Make-it-Heavy</h3>
+          <p class='text-sm text-foreground/80'>Enhanced processing mode</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dialog Template -->
+    <div id='dialog' class='hidden fixed inset-0 bg-black/50 flex items-center justify-center'>
+      <div class='bg-muted p-6 rounded-xl max-w-sm w-full mx-4'>
+        <h3 class='text-lg font-semibold mb-4'>Confirmation</h3>
+        <p class='mb-6'>Are you sure you want to proceed?</p>
+        <div class='flex justify-end gap-2'>
+          <button class='px-4 py-2 rounded-lg hover:bg-muted'>Cancel</button>
+          <button class='px-4 py-2 bg-primary rounded-lg hover:bg-primary/90'>Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
