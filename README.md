@@ -210,7 +210,7 @@ python gui/main_app.py
 Run a single intelligent agent with full tool access:
 
 ```bash
-uv run main.py
+python main.py
 ```
 
 **What it does:**
@@ -230,7 +230,7 @@ Agent: [Uses search tool, analyzes results, provides summary]
 Emulate Grok heavy's deep analysis with 4 parallel intelligent agents:
 
 ```bash
-uv run make_it_heavy.py
+python make_it_heavy.py
 ```
 
 **How Make It heavy works:**
@@ -476,18 +476,18 @@ You can specify different configuration files at runtime without modifying your 
 
 ```bash
 # Single agent mode with different providers
-uv run main.py --config config_deepseek.yaml           # DeepSeek general use
-uv run main.py --config config_deepseek_reasoner.yaml  # DeepSeek reasoning
-uv run main.py --config config.yaml                    # Default/OpenRouter
+python main.py --config config_deepseek.yaml           # DeepSeek general use
+python main.py --config config_deepseek_reasoner.yaml  # DeepSeek reasoning
+python main.py --config config.yaml                    # Default/OpenRouter
 
-# Multi-agent mode with different providers  
-uv run make_it_heavy.py --config config_deepseek.yaml           # Cost-effective
-uv run make_it_heavy.py --config config_deepseek_reasoner.yaml  # Complex analysis
-uv run make_it_heavy.py --config config.yaml                    # Default/OpenRouter
+# Multi-agent mode with different providers
+python make_it_heavy.py --config config_deepseek.yaml           # Cost-effective
+python make_it_heavy.py --config config_deepseek_reasoner.yaml  # Complex analysis
+python make_it_heavy.py --config config.yaml                    # Default/OpenRouter
 
 # Examples for different use cases
-uv run main.py --config config_deepseek.yaml           # Daily tasks
-uv run make_it_heavy.py --config config_deepseek_reasoner.yaml  # Research projects
+python main.py --config config_deepseek.yaml           # Daily tasks
+python make_it_heavy.py --config config_deepseek_reasoner.yaml  # Research projects
 ```
 
 **Configuration File Naming Convention:**
@@ -941,10 +941,10 @@ deepseek:
 **Step 4: Test Your Setup**
 ```bash
 # Test single agent mode
-uv run main.py
+python main.py
 
 # Test multi-agent mode
-uv run make_it_heavy.py
+python make_it_heavy.py
 ```
 
 ### Configuration File Management
@@ -966,11 +966,11 @@ config_deepseek_reasoner.yaml  # DeepSeek reasoning tasks
 # Switch to DeepSeek
 cp config_deepseek.yaml config.yaml
 
-# Switch to OpenRouter  
+# Switch to OpenRouter
 cp config_openrouter.yaml config.yaml
 
 # Or use command-line parameter
-uv run main.py --config config_deepseek.yaml
+python main.py --config config_deepseek.yaml
 ```
 
 ### Model Migration Guide
@@ -1026,7 +1026,7 @@ If you need to rollback to OpenRouter:
 cp config_openrouter.yaml config.yaml
 
 # Or specify at runtime
-uv run main.py --config config_openrouter.yaml
+python main.py --config config_openrouter.yaml
 ```
 
 **Backup Your Working Configuration:**
@@ -1054,10 +1054,10 @@ Run different providers for different use cases:
 
 ```bash
 # Cost-sensitive tasks with DeepSeek
-uv run make_it_heavy.py --config config_deepseek.yaml
+python make_it_heavy.py --config config_deepseek.yaml
 
 # Critical tasks with premium OpenRouter models
-uv run make_it_heavy.py --config config_openrouter_premium.yaml
+python make_it_heavy.py --config config_openrouter_premium.yaml
 ```
 
 **Hybrid Configuration Strategy:**
@@ -1231,8 +1231,31 @@ See [LICENSE](LICENSE) file for full details.
 **Ready to make it heavy?** 🚀
 
 ```bash
-uv run make_it_heavy.py
+python make_it_heavy.py
 ```
+
+## 🤖 Agent Integration (@agent and @super commands)
+
+Make It Heavy is fully integrated with the Clipboard LLM Automator application, providing seamless access to both single and multi-agent capabilities through simple clipboard commands:
+
+### @agent Command (Single Agent Mode)
+- **Trigger**: Copy text starting with `@agent ` to clipboard
+- **Function**: Runs a single intelligent agent with full tool access
+- **Supported Providers**: OpenRouter, DeepSeek
+- **Example**: Copy `@agent Research the latest AI developments` to clipboard
+
+### @super Command (Multi-Agent Mode)
+- **Trigger**: Copy text starting with `@super ` to clipboard
+- **Function**: Runs 4 parallel agents for comprehensive Grok Heavy-style analysis
+- **Supported Providers**: OpenRouter, DeepSeek
+- **Example**: Copy `@super Analyze the impact of AI on software development` to clipboard
+
+### Provider Support
+Both `@agent` and `@super` commands now work with:
+- **OpenRouter**: Access to GPT-4, Claude, Gemini, and other premium models
+- **DeepSeek**: Cost-effective access to DeepSeek-V3 and DeepSeek-R1 models
+
+The system automatically uses the provider and model configured in your active prompt slot within the Clipboard LLM Automator interface.
 
 ## Star History
 
